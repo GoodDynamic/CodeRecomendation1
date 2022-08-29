@@ -7,8 +7,8 @@ public class SoundWarning : MonoBehaviour
 {
     private readonly float _minLoud = 0;
     private readonly float _maxLoud = 1;
-    private float _loud=0;
-    private int _maxFramesCount = 200;
+    private float _loud = 0;
+    private float _loudStep = 0.01f;
 
     private Coroutine _onEnterCoroutine;
     private Coroutine _onExitCoroutine;
@@ -17,16 +17,18 @@ public class SoundWarning : MonoBehaviour
 
     private void Start()
     {
-        _audioSource=GetComponent<AudioSource>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     public void OnIntruderEnter()
     {
-        _audioSource.Play();
-        
+        if (_audioSource.isPlaying == false)
+            _audioSource.Play();
+
         if (_onExitCoroutine != null)
             StopCoroutine(_onExitCoroutine);
 
+        _audioSource.mute = false;
         _onEnterCoroutine = StartCoroutine(ChangeLoudness(_maxLoud));
     }
 
@@ -39,12 +41,17 @@ public class SoundWarning : MonoBehaviour
 
     private IEnumerator ChangeLoudness(float targetLoud)
     {
-        while (Mathf.Abs(_loud - targetLoud) > 1f / _maxFramesCount)
+        while (Mathf.Abs(_loud - targetLoud) > _loudStep)
         {
-            _loud = Mathf.Lerp(_loud, targetLoud, 1f / _maxFramesCount);
+            _loud = Mathf.Lerp(_loud, targetLoud, _loudStep);
             _audioSource.volume = _loud;
 
             yield return null;
         }
+
+        _loud = targetLoud;
+
+        if (targetLoud == _minLoud)
+            _audioSource.mute = true;
     }
 }

@@ -6,7 +6,7 @@ using System.Linq;
 public class ThiefMotion : MonoBehaviour
 {
     [SerializeField] private int _reachedPoints = 0;
-    private readonly int _stepsToDistrict = 20;
+    private readonly float _stepSize = 0.1f;
 
     [SerializeField] private bool _isWorried;
     private float _accessTime = 4;
@@ -15,14 +15,16 @@ public class ThiefMotion : MonoBehaviour
     [SerializeField] private GameObject _allPath;
     [SerializeField] private Transform[] _path;
     private Transform[] _backPath;
+
     private Animator _animator;
+    private readonly float _walkSpeed = 1f;
 
     void Start()
     {
-        _animator=GetComponent<Animator>();
-        _animator.SetFloat("speed", 1f);
+        _animator = GetComponent<Animator>();
+        _animator.SetFloat("thiefsSpeed", _walkSpeed);
 
-        _path =_allPath.GetComponentsInChildren<Transform>().
+        _path = _allPath.GetComponentsInChildren<Transform>().
                OrderBy(transform => transform.gameObject.name).ToArray();
         _path = _path.Except(new Transform[] { _allPath.GetComponent<Transform>() }).ToArray();
         _backPath = _path.Reverse().ToArray();
@@ -41,9 +43,9 @@ public class ThiefMotion : MonoBehaviour
     {
         if (_reachedPoints + 1 < path.Length)
         {
-            _animator.SetFloat("speed", 1f);
+            _animator.speed = _walkSpeed;
 
-            if ((transform.position - path[_reachedPoints + 1].position).magnitude < 0.1)
+            if ((transform.position - path[_reachedPoints + 1].position).magnitude < _stepSize)
             {
                 _reachedPoints++;
 
@@ -55,7 +57,7 @@ public class ThiefMotion : MonoBehaviour
             else
             {
                 transform.rotation = GetDirectRotation(transform.position, path[_reachedPoints + 1].position);
-                transform.position = Vector3.MoveTowards(transform.position, path[_reachedPoints + 1].position, 1f / (float)_stepsToDistrict);
+                transform.position = Vector3.MoveTowards(transform.position, path[_reachedPoints + 1].position, _stepSize);
             }
         }
         else
@@ -64,7 +66,7 @@ public class ThiefMotion : MonoBehaviour
         }
     }
 
-    private Quaternion GetDirectRotation(Vector3 startPosition,Vector3 nextPosition)
+    private Quaternion GetDirectRotation(Vector3 startPosition, Vector3 nextPosition)
     {
         Vector3 lookDirection = (nextPosition - startPosition);
         lookDirection.y = 0;
@@ -73,7 +75,7 @@ public class ThiefMotion : MonoBehaviour
 
     private void AccessSituation()
     {
-        GetComponent<Animator>().SetFloat("speed", 0f);
+        _animator.SetFloat("thiefsSpeed", 0);
         _isAccessing = true;
         _isWorried = !_isWorried;
 
@@ -82,7 +84,7 @@ public class ThiefMotion : MonoBehaviour
 
     private void StartNewMotion()
     {
-        _animator.SetFloat("speed", 1f);
+        _animator.SetFloat("thiefsSpeed", _walkSpeed);
         _reachedPoints = 0;
         _isAccessing = false;
     }
