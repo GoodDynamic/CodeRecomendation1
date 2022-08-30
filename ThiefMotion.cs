@@ -5,32 +5,31 @@ using System.Linq;
 
 public class ThiefMotion : MonoBehaviour
 {
-    [SerializeField] private int _reachedPoints = 0;
-    private readonly float _stepSize = 0.1f;
-
-    [SerializeField] private bool _isWorried;
-    private float _accessTime = 4;
-    private bool _isAccessing = false;
-
-    [SerializeField] private GameObject _allPath;
-    [SerializeField] private Transform[] _path;
+    [SerializeField] private GameObject _pathPoints;
+    private Transform[] _path;
     private Transform[] _backPath;
+
+    private int _reachedPoints;
+    private readonly float _stepSize = 0.05f;
+
+    private bool _isWorried;
+    private readonly float _accessTime = 4;
+    private bool _isAccessing;
 
     private Animator _animator;
     private readonly float _walkSpeed = 1f;
 
-    void Start()
+    private void Start()
     {
         _animator = GetComponent<Animator>();
         _animator.SetFloat("thiefsSpeed", _walkSpeed);
-
-        _path = _allPath.GetComponentsInChildren<Transform>().
+        _path = _pathPoints.GetComponentsInChildren<Transform>().
                OrderBy(transform => transform.gameObject.name).ToArray();
-        _path = _path.Except(new Transform[] { _allPath.GetComponent<Transform>() }).ToArray();
+        _path = _path.Except(new Transform[] { _pathPoints.GetComponent<Transform>() }).ToArray();
         _backPath = _path.Reverse().ToArray();
     }
 
-    void Update()
+    private void Update()
     {
         if (_isAccessing == false)
             if (_isWorried)

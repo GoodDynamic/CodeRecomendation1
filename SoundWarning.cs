@@ -2,7 +2,6 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-
 public class SoundWarning : MonoBehaviour
 {
     private readonly float _minLoud = 0;
@@ -45,13 +44,14 @@ public class SoundWarning : MonoBehaviour
         {
             _loud = Mathf.Lerp(_loud, targetLoud, _loudStep);
             _audioSource.volume = _loud;
-
             yield return null;
         }
 
         _loud = targetLoud;
 
         if (targetLoud == _minLoud)
+        {
             _audioSource.mute = true;
+        }
     }
 }
