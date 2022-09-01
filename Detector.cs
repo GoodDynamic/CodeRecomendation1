@@ -12,14 +12,15 @@ public class Detector : MonoBehaviour
     {
         if (other.TryGetComponent(out ThiefMotion thiefMotion))
         {
-            if (other.transform.position.z > transform.position.z)
-            {
                 _intruderEnter.Invoke();
-            }
-            else
-            {
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.TryGetComponent(out ThiefMotion thiefMotion))
+        {
                 _intruderExit.Invoke();
-            }
         }
     }
 }

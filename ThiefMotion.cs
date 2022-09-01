@@ -17,12 +17,13 @@ public class ThiefMotion : MonoBehaviour
     private bool _isAccessing;
 
     private Animator _animator;
-    private readonly float _walkSpeed = 1f;
+    private float _walkSpeed = 1f;
+    private const string _thiefsSpeed = "thiefsSpeed";
 
     private void Start()
     {
         _animator = GetComponent<Animator>();
-        _animator.SetFloat("thiefsSpeed", _walkSpeed);
+        _animator.SetFloat(_thiefsSpeed, _walkSpeed);
         _path = _pathPoints.GetComponentsInChildren<Transform>().
                OrderBy(transform => transform.gameObject.name).ToArray();
         _path = _path.Except(new Transform[] { _pathPoints.GetComponent<Transform>() }).ToArray();
@@ -42,7 +43,7 @@ public class ThiefMotion : MonoBehaviour
     {
         if (_reachedPoints + 1 < path.Length)
         {
-            _animator.speed = _walkSpeed;
+            _animator.SetFloat(_thiefsSpeed, _walkSpeed);
 
             if ((transform.position - path[_reachedPoints + 1].position).magnitude < _stepSize)
             {
@@ -74,7 +75,7 @@ public class ThiefMotion : MonoBehaviour
 
     private void AccessSituation()
     {
-        _animator.SetFloat("thiefsSpeed", 0);
+        _animator.SetFloat(_thiefsSpeed, 0);
         _isAccessing = true;
         _isWorried = !_isWorried;
 
@@ -83,7 +84,7 @@ public class ThiefMotion : MonoBehaviour
 
     private void StartNewMotion()
     {
-        _animator.SetFloat("thiefsSpeed", _walkSpeed);
+        _animator.SetFloat(_thiefsSpeed, _walkSpeed);
         _reachedPoints = 0;
         _isAccessing = false;
     }
