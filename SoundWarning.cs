@@ -9,8 +9,7 @@ public class SoundWarning : MonoBehaviour
     private float _loud = 0;
     private float _loudStep = 0.01f;
 
-    private Coroutine _onEnterCoroutine;
-    private Coroutine _onExitCoroutine;
+    private Coroutine _onLoudChange;
 
     private AudioSource _audioSource;
 
@@ -24,30 +23,27 @@ public class SoundWarning : MonoBehaviour
         if (_audioSource.isPlaying == false)
             _audioSource.Play();
 
-        if (_onExitCoroutine != null)
-            StopCoroutine(_onExitCoroutine);
+        if (_onLoudChange != null)
+            StopCoroutine(_onLoudChange);
 
         _audioSource.mute = false;
-        _onEnterCoroutine = StartCoroutine(ChangeLoudness(_maxLoud));
+        _onLoudChange = StartCoroutine(ChangeLoudness(_maxLoud));
     }
 
     public void OnIntruderExit()
     {
-        StopCoroutine(_onEnterCoroutine);
-
-        _onExitCoroutine = StartCoroutine(ChangeLoudness(_minLoud));
+        StopCoroutine(_onLoudChange);
+        _onLoudChange = StartCoroutine(ChangeLoudness(_minLoud));
     }
 
     private IEnumerator ChangeLoudness(float targetLoud)
     {
-        while (Mathf.Abs(_loud - targetLoud) > _loudStep)
+        while (_loud != targetLoud)
         {
-            _loud = Mathf.Lerp(_loud, targetLoud, _loudStep);
+            _loud = Mathf.MoveTowards(_loud, targetLoud, _loudStep);
             _audioSource.volume = _loud;
             yield return null;
         }
-
-        _loud = targetLoud;
 
         if (targetLoud == _minLoud)
         {
