@@ -5,7 +5,8 @@ using System.Linq;
 
 public class ThiefMotion : MonoBehaviour
 {
-    [SerializeField] private GameObject _pathPoints;
+    [SerializeField] private Transform _pathPoints;
+
     private Transform[] _path;
     private Transform[] _backPath;
 
@@ -26,7 +27,7 @@ public class ThiefMotion : MonoBehaviour
         _animator.SetFloat(_thiefsSpeed, _walkSpeed);
         _path = _pathPoints.GetComponentsInChildren<Transform>().
                OrderBy(transform => transform.gameObject.name).ToArray();
-        _path = _path.Except(new Transform[] { _pathPoints.GetComponent<Transform>() }).ToArray();
+        _path = _path.Except(new Transform[] { _pathPoints }).ToArray();
         _backPath = _path.Reverse().ToArray();
     }
 
